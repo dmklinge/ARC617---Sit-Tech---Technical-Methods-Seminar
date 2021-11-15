@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fly to a location based on scroll position</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.1/mapbox-gl.js"></script>
+  <style>
+  body { margin: 0; padding: 0; }
+  #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+  <style>
+  #map {
+    position: fixed;
+    width: 75%;
+  }
+  #features {
+    width: 75%;
+    margin-left: 75%;
+    font-family: sans-serif;
+    overflow-y: scroll;
+    background-color: #fafafa;
+  }
+  section {
+    padding: 25px 50px;
+    line-height: 25px;
+    border-bottom: 1px solid #ddd;
+    opacity: 0.25;
+    font-size: 13px;
+  }
+  section.active {
+    opacity: 1;
+  }
+  section:last-child {
+    border-bottom: none;
+    margin-bottom: 200px;
+  }
+  .marker {
+    background-image: url('mapbox-icon.png');
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+</style>
+
+<div id="map"></div>
+<div id="features">
+  <section id="BSP" class="active">
+    <h3>Bethlehem Steel Plant</h3>
+    <p>
+      -----
+      </thead>
+    </p>
+  </section>
+  <section id="PS">
+    <h3>Pattern Storage</h3>
+    <p>
+      -----
+    </p>
+  </section>
+  <section id="PH2">
+    <h3>Power House 2</h3>
+    <p>
+      -----
+    </p>
+  </section>
+  <section id="BH5">
+    <h3>Boiler House 5</h3>
+    <p>
+      -----
+    </p>
+  </section>
+  <section id="CS">
+    <h3>Card Shop</h3>
+    <p>
+      -----
+    </p>
+  </section>
+  <section id="Ga">
+    <h3>Garage</h3>
+    <p>
+      -----
+    </p>
+  </section>
+  <section id="Pr">
+    <h3>Precipitators</h3>
+    <p>
+      -----
+    </p>
+  </section>
+  <section id="NO">
+    <h3>North Office</h3>
+    <p>
+      -----
+    </p>
+    </section>
+    <section id="Cl">
+      <h3>Clinic</h3>
+      <p>
+        -----
+        </thead>
+      </p>
+      </section>
+      <section id="FH">
+        <h3>Fire House</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="SR">
+        <h3>Structural Repair</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="RS">
+        <h3>Roll Shop</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="PTS">
+        <h3>Pipe & Tool Shop</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="PlS">
+        <h3>Plate Shop</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="SH">
+        <h3>Store House</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="CRS">
+        <h3>Crane Repair Shop</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="MY">
+        <h3>Mould Yard</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="OH2">
+        <h3>Open Hearth 2</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="LRS">
+        <h3>Ladle Repair Shop</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="LH">
+        <h3>Ladle House</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="BFB">
+        <h3>Blast Furnace B</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="BFC">
+        <h3>Blast Furnace C</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="Fou">
+        <h3>Foundry</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="MS">
+        <h3>Machine Shop</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="FS">
+        <h3>Forge Shop</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="CSY">
+        <h3>Cold Steel Yard</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="PF">
+        <h3>Pit Furnaces</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="S2">
+        <h3>Stripper 2</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="44BM">
+        <h3>44" Blooming Mill</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="PH1">
+        <h3>Power House 1</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="BEH2">
+        <h3>Blowing Engine House 2</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="BFF">
+        <h3>Blast Furnace F</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="BFG">
+        <h3>Blast Furnace G</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="BH">
+        <h3>Boiler House</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="30.21M">
+        <h3>30" - 21" Mill</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="40BM">
+        <h3>40" Blooming Mill</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="RM">
+        <h3>Rail Mill</h3>
+        <p>
+          -----
+        </p>
+      </section>
+      <section id="BPB2">
+        <h3>Rail Mill</h3>
+        <p>
+          -----
+        </p>
+      </section>
+    <small id="citation">
+      Adapted from
+      <a href="http://www.gutenberg.org/files/2346/2346-h/2346-h.htm">Project Gutenberg</a>
+    </small>
+  </section>
+</div>
+
+function rotateCamera(timestamp) {
+// clamp the rotation between 0 -360 degrees
+// Divide timestamp by 100 to slow rotation to ~10 degrees / sec
+map.rotateTo((timestamp / 100) % 360, { duration: 0 });
+// Request the next frame of the animation.
+requestAnimationFrame(rotateCamera);
+}
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZG1rbGluZ2VyMTIiLCJhIjoiY2t2NzZoMnQxMXI3cjJvbDBpaDZtcDRxMCJ9.MuV__FdHRC7aSMrd-GEJeg';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/satellite-streets-v10',
+  center: [-78.855636, 42.817095],
+  zoom: 13.5,
+  bearing: 0,
+  pitch: 00
+});
+
+//PS - Pattern Storage
+const marker = new mapboxgl.Marker()
+.setLngLat([-78.859511, 42.832552])
+.addTo(map);
+
+//PH2 - Powr House 2
+const marker1 = new mapboxgl.Marker()
+.setLngLat([-78.859534,  42.831993])
+.addTo(map);
+
+//BH - Boiler House
+const marker2 = new mapboxgl.Marker()
+.setLngLat([-78.858959, 42.831803])
+.addTo(map);
+
+//CS - Card Shop
+const marker3 = new mapboxgl.Marker()
+.setLngLat([-78.858021, 42.832099])
+.addTo(map);
+
+//Ga - Garage
+const marker4 = new mapboxgl.Marker()
+.setLngLat([-78.855733, 42.832302])
+.addTo(map);
+
+//Pr - Precipitators
+const marker5 = new mapboxgl.Marker()
+.setLngLat([-78.859777, 42.831407])
+.addTo(map);
+
+//NO - North Office
+const marker6 = new mapboxgl.Marker()
+.setLngLat([-78.854174, 42.831749])
+.addTo(map);
+
+//Cl - Clinic
+const marker7 = new mapboxgl.Marker()
+.setLngLat([-78.854022, 42.831196])
+.addTo(map);
+
+//FH - Fire House
+const marker8 = new mapboxgl.Marker()
+.setLngLat([-78.85340, 42.83058])
+.addTo(map);
+
+//SR - Structural Repair
+const marker9 = new mapboxgl.Marker()
+.setLngLat([-78.853891, 42.830110])
+.addTo(map);
+
+//RS - Roll Shop
+const marker10 = new mapboxgl.Marker()
+.setLngLat([-78.854422, 42.829813])
+.addTo(map);
+
+//PTS - Pipe & Tool Shop
+const marker11 = new mapboxgl.Marker()
+.setLngLat([-78.854852, 42.829651])
+.addTo(map);
+
+//PlS - Plate Shop
+const marker12 = new mapboxgl.Marker()
+.setLngLat([-78.855324, 42.829537])
+.addTo(map);
+
+//SH - Store House
+const marker13 = new mapboxgl.Marker()
+.setLngLat([-78.855320, 42.830915])
+.addTo(map);
+
+//CRS - Crane Repair Shop
+const marker14 = new mapboxgl.Marker()
+.setLngLat([-78.855943, 42.830739])
+.addTo(map);
+
+//MY - Mould Yard
+const marker15 = new mapboxgl.Marker()
+.setLngLat([-78.856331, 42.830091])
+.addTo(map);
+
+//OH2 - Open Hearth 2
+const marker16 = new mapboxgl.Marker()
+.setLngLat([-78.856627, 42.829349])
+.addTo(map);
+
+//LRS - Ladle Repair Shop
+const marker17 = new mapboxgl.Marker()
+.setLngLat([-78.858315, 42.829962])
+.addTo(map);
+
+//LH - Ladle House
+const marker18 = new mapboxgl.Marker()
+.setLngLat([-78.858018, 42.829264])
+.addTo(map);
+
+//BFB - Blast Furnace B
+const marker19 = new mapboxgl.Marker()
+.setLngLat([-78.858974, 42.830144])
+.addTo(map);
+
+//BFC - Blast Furnace C
+const marker20 = new mapboxgl.Marker()
+.setLngLat([-78.858161, 42.828411])
+.addTo(map);
+
+//Fou - Foundry
+const marker21 = new mapboxgl.Marker()
+.setLngLat([-78.855337, 42.827995])
+.addTo(map);
+
+//MS - Machine Shop
+const marker22 = new mapboxgl.Marker()
+.setLngLat([-78.854634, 42.828076])
+.addTo(map);
+
+//FS - Forge Shop
+const marker23 = new mapboxgl.Marker()
+.setLngLat([-78.854280, 42.828293])
+.addTo(map);
+
+//CSY - Cold Steel Yard
+const marker24 = new mapboxgl.Marker()
+.setLngLat([-78.852960, 42.827386])
+.addTo(map);
+
+//PF - Pit Furnaces
+const marker25 = new mapboxgl.Marker()
+.setLngLat([-78.854423, 42.825987])
+.addTo(map);
+
+//S2 - Stripper 2
+const marker26 = new mapboxgl.Marker()
+.setLngLat([-78.855116, 42.826712])
+.addTo(map);
+
+//44BM - 44" Blooming Mill
+const marker27 = new mapboxgl.Marker()
+.setLngLat([-78.854993, 42.825599])
+.addTo(map);
+
+//PH1 - Power House 1
+const marker28 = new mapboxgl.Marker()
+.setLngLat([-78.856209, 42.826613])
+.addTo(map);
+
+//BEH2 - Blowing Engine House 2
+const marker29 = new mapboxgl.Marker()
+.setLngLat([-78.856965, 42.826759])
+.addTo(map);
+
+//BFF - Blast Furnace F
+const marker30 = new mapboxgl.Marker()
+.setLngLat([-78.857019, 42.825852])
+.addTo(map);
+
+//BFF - Blast Furnace G
+const marker31 = new mapboxgl.Marker()
+.setLngLat([-78.856472, 42.824670])
+.addTo(map);
+
+//BH - Boiler House
+const marker32 = new mapboxgl.Marker()
+.setLngLat([-78.856111, 42.825011])
+.addTo(map);
+
+//30.21 - 30" - 21" Mill
+const marker33 = new mapboxgl.Marker()
+.setLngLat([-78.854681, 42.824600])
+.addTo(map);
+
+//40BM - 40" Blooming Mill
+const marker34 = new mapboxgl.Marker()
+.setLngLat([-78.853461, 42.824529])
+.addTo(map);
+
+//RM - Rail Mill
+const marker35 = new mapboxgl.Marker()
+.setLngLat([-78.854449, 42.823945])
+.addTo(map);
+
+//BPB2 - Billet Preparation Building 2
+const marker36 = new mapboxgl.Marker()
+.setLngLat([-78.851792, 42.822894])
+.addTo(map);
+
+
+
+
+const chapters = {
+  'BSP': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.855636, 42.817095],
+    zoom: 13.5,
+    pitch: 00
+  },
+  'PS': {
+
+    duration: 2500,
+    bearing: 0,
+    center: [-78.859511, 42.832552],
+    zoom: 17,
+    pitch: 00
+  },
+  'PH2': {
+    duration: 2500,
+    center: [-78.859534,  42.831993],
+    bearing: 0,
+    zoom: 17,
+    pitch: 00
+  },
+  'BH5': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.858959, 42.831803],
+    zoom: 17,
+    pitch: 00
+  },
+  'CS': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.858021, 42.832099],
+    zoom: 17,
+    pitch: 00
+  },
+  'Ga': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.855733, 42.832302],
+    zoom: 17,
+    pitch: 00
+  },
+  'Pr': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.859777, 42.831407],
+    zoom: 17,
+    pitch: 0
+  },
+  'NO': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854174, 42.831749],
+    zoom: 17,
+    pitch: 00
+  },
+  'Cl': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854022, 42.831196],
+    zoom: 17,
+    pitch: 00
+  },
+  'FH': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.85340, 42.83058],
+    zoom: 17,
+    pitch: 00
+  },
+  'SR': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.853891, 42.830110],
+    zoom: 17,
+    pitch: 00
+  },
+  'RS': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854422, 42.829813],
+    zoom: 17,
+    pitch: 00
+  },
+  'PTS': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854852, 42.829651],
+    zoom: 17,
+    pitch: 00
+  },
+  'PlS': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.855324, 42.829537],
+    zoom: 17,
+    pitch: 00
+  },
+  'SH': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.855320, 42.830915],
+    zoom: 17,
+    pitch: 00
+  },
+  'CRS': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.855943, 42.830739],
+    zoom: 17,
+    pitch: 00
+  },
+  'MY': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.856331, 42.830091],
+    zoom: 17,
+    pitch: 00
+  },
+  'OH2': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.856627, 42.829349],
+    zoom: 17,
+    pitch: 00
+  },
+  'LRS': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.858315, 42.829962],
+    zoom: 17,
+    pitch: 00
+  },
+  'LH': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.858018, 42.829264],
+    zoom: 17,
+    pitch: 00
+  },
+  'BFB': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.858974, 42.830144],
+    zoom: 17,
+    pitch: 00
+  },
+  'BFC': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.858161, 42.828411],
+    zoom: 17,
+    pitch: 00
+  },
+  'Fou': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.855337, 42.827995],
+    zoom: 17,
+    pitch: 00
+  },
+  'MS': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854634, 42.828076],
+    zoom: 17,
+    pitch: 00
+  },
+  'FS': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854280, 42.828293],
+    zoom: 17,
+    pitch: 00
+  },
+  'CSY': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.852960, 42.827386],
+    zoom: 17,
+    pitch: 00
+  },
+  'PF': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854423, 42.825987],
+    zoom: 17,
+    pitch: 00
+  },
+  'S2': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.855116, 42.826712],
+    zoom: 17,
+    pitch: 00
+  },
+  '44BM': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854993, 42.825599],
+    zoom: 17,
+    pitch: 00
+  },
+  'PH1': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.856209, 42.826613],
+    zoom: 17,
+    pitch: 00
+  },
+  'BEH2': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.856965, 42.826759],
+    zoom: 17,
+    pitch: 00
+  },
+  'BFF': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.857019, 42.825852],
+    zoom: 17,
+    pitch: 00
+  },
+  'BFG': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.856472, 42.824670],
+    zoom: 17,
+    pitch: 00
+  },
+  'BH': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.856111, 42.825011],
+    zoom: 17,
+    pitch: 00
+  },
+  '30.21M': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854681, 42.824600],
+    zoom: 17,
+    pitch: 00
+  },
+  '40BM': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.853461, 42.824529],
+    zoom: 17,
+    pitch: 00
+  },
+  'RM': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.854449, 42.823945],
+    zoom: 17,
+    pitch: 00
+  },
+  'BPB2': {
+    duration: 2500,
+    bearing: 0,
+    center: [-78.851792, 42.822894],
+    zoom: 17,
+    pitch: 00
+  },
+
+
+
+};
+
+let activeChapterName = 'bwm';
+function setActiveChapter(chapterName) {
+  if (chapterName === activeChapterName) return;
+
+  map.flyTo(chapters[chapterName]);
+
+  document.getElementById(chapterName).classList.add('active');
+  document.getElementById(activeChapterName).classList.remove('active');
+
+  activeChapterName = chapterName;
+}
+
+function isElementOnScreen(id) {
+  const element = document.getElementById(id);
+  const bounds = element.getBoundingClientRect();
+  return bounds.top < window.innerHeight && bounds.bottom > 0;
+}
+
+// On every scroll event, check which element is on screen
+window.onscroll = () => {
+  for (const chapterName in chapters) {
+    if (isElementOnScreen(chapterName)) {
+      setActiveChapter(chapterName);
+      break;
+    }
+  }
+};
+
+// add markers to map
+for (const feature of geojson.features) {
+  // create a HTML element for each feature
+  const el = document.createElement('div');
+  el.className = 'marker';
+
+  // make a marker for each feature and add to the map
+  new mapboxgl.Marker(el).setLngLat(feature.geometry.coordinates).addTo(map);
+}
+
+</script>
+
+</body>
+</html>
