@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fly to a location based on scroll position</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.1/mapbox-gl.js"></script>
+  <style>
+  body { margin: 0; padding: 0; }
+  #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+  <style>
+  #map {
+    position: fixed;
+    width: 100%;
+  }
+
+  .MapLocationContainer {
+    z-index: 999;
+    position: fixed;
+    right: 5%;
+    top: 5%;
+    background-color: lightgray;
+    border: blue solid 2px;
+    border-radius: 5px;
+    inline-size: 20%;
+    overflow-wrap: break-word;
+    text-align: center;
+    font-family: Arial;
+  }
+
+  #MapLocationDesc {
+    white-space: pre-wrap;
+    text-align: left;
+  }
+
+  #features {
+    width: 27%;
+    margin-left: 75%;
+    font-family: sans-serif;
+    overflow-y: scroll;
+    background-color: #fafafa;
+    /* top: -100px; */
+  }
+
+  section {
+    padding: 25px 50px;
+    line-height: 25px;
+    border-bottom: 1px solid #ddd;
+    opacity: 0.25;
+    font-size: 13px;
+  }
+  section.active {
+    opacity: 1;
+  }
+  section:last-child {
+    border-bottom: none;
+    margin-bottom: 200px;
+  }
+
+  .prevnext {
+    position: fixed;
+    font-family: Arial;
+    z-index: 999;
+    /* background-color: black; */
+    color: blue;
+    top: 2.5%;
+    right: 13%;
+  }
+
+  .marker {
+    background-image: url('mapbox-icon.png');
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+
+  }
+
+  .slidecontainer {
+    width: 75%;
+    /* Width of the outside container */
+    z-index: 999;
+  }
+
+  /* The slider itself */
+  .slider {
+    -webkit-appearance: none;
+    /* Override default CSS styles */
+    appearance: none;
+    width: 15%;
+    /* Full-width */
+    height: 25px;
+    /* Specified height */
+    background: #d3d3d3;
+    /* Grey background */
+    outline: none;
+    /* Remove outline */
+    opacity: 0.7;
+    /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s;
+    /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+    z-index: 999;
+    position: fixed;
+    top: 35px;
+  }
+
+  /* Mouse-over effects */
+  .slider:hover {
+    opacity: 1;
+    /* Fully shown on mouse-over */
+  }
+
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    /* Override default look */
+    appearance: none;
+    width: 25px;
+    /* Set a specific slider handle width */
+    height: 25px;
+    /* Slider handle height */
+    background: green;
+    /* Green background */
+    cursor: pointer;
+    /* Cursor on hover */
+    z-index: 999;
+  }
+
+  .slider::-moz-range-thumb {
+    width: 25px;
+    /* Set a specific slider handle width */
+    height: 25px;
+    /* Slider handle height */
+    background: #04AA6D;
+    /* Green background */
+    cursor: pointer;
+    /* Cursor on hover */
+    z-index: 999;
+  }
+
+  .slider2 {
+    -webkit-appearance: none;
+    /* Override default CSS styles */
+    appearance: none;
+    width: 15%;
+    /* Full-width */
+    height: 25px;
+    /* Specified height */
+    background: #d3d3d3;
+    /* Grey background */
+    outline: none;
+    /* Remove outline */
+    opacity: 0.7;
+    /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s;
+    /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+    z-index: 999;
+    position: fixed;
+    top: 100px;
+  }
+
+  /* Mouse-over effects */
+  .slider2:hover {
+    opacity: 1;
+    /* Fully shown on mouse-over */
+  }
+
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider2::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    /* Override default look */
+    appearance: none;
+    width: 25px;
+    /* Set a specific slider handle width */
+    height: 25px;
+    /* Slider handle height */
+    background: green;
+    /* Green background */
+    cursor: pointer;
+    /* Cursor on hover */
+    z-index: 999;
+  }
+
+  .slider2::-moz-range-thumb {
+    width: 25px;
+    /* Set a specific slider handle width */
+    height: 25px;
+    /* Slider handle height */
+    background: #04AA6D;
+    /* Green background */
+    cursor: pointer;
+    /* Cursor on hover */
+    z-index: 999;
+  }
+
+  .slider3 {
+    -webkit-appearance: none;
+    /* Override default CSS styles */
+    appearance: none;
+    width: 15%;
+    /* Full-width */
+    height: 25px;
+    /* Specified height */
+    background: #d3d3d3;
+    /* Grey background */
+    outline: none;
+    /* Remove outline */
+    opacity: 0.7;
+    /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s;
+    /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+    z-index: 999;
+    position: fixed;
+    top: 165px;
+  }
+
+  /* Mouse-over effects */
+  .slider3:hover {
+    opacity: 1;
+    /* Fully shown on mouse-over */
+  }
+
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider3::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    /* Override default look */
+    appearance: none;
+    width: 25px;
+    /* Set a specific slider handle width */
+    height: 25px;
+    /* Slider handle height */
+    background: green;
+    /* Green background */
+    cursor: pointer;
+    /* Cursor on hover */
+    z-index: 999;
+  }
+
+  .slider3::-moz-range-thumb {
+    width: 25px;
+    /* Set a specific slider handle width */
+    height: 25px;
+    /* Slider handle height */
+    background: #04AA6D;
+    /* Green background */
+    cursor: pointer;
+    /* Cursor on hover */
+    z-index: 999;
+  }
+
+  .textcontainer {
+    position: fixed;
+    font-family: Arial;
+    z-index: 999;
+    width: 5%;
+    /* background-color: black; */
+    color: green;
+    top: -10px;
+  }
+
+  .textcontainer2 {
+    position: fixed;
+    font-family: Arial;
+    z-index: 999;
+    width: 5%;
+    /* background-color: black; */
+    color: green;
+    top: 55px;
+  }
+
+  .textcontainer3 {
+    position: fixed;
+    font-family: Arial;
+    z-index: 999;
+    width: 5%;
+    /* background-color: black; */
+    color: green;
+    top: 120px;
+  }
+
+  .checkbox7 {
+    position: fixed;
+    font-family: Arial;
+    z-index: 999;
+    /* background-color: black; */
+    color: blue;
+    top: 215px;
+  }
+
+</style>
+
+<div class="slidecontainer">
+  <input type="range" min="3" max="20" value="4" class="slider" id="myZoom" step="0.5">
+  <p></p>
+</div>
+
+<div class="textcontainer">
+  <h4>Zoom</h4>
+</div>>
+
+<div class="slidecontainer2">
+  <input type="range" min="0" max="90" value="30" class="slider2" id="myPitch" step="1">
+</div>
+
+<div class="textcontainer2">
+  <h4>Pitch</h4>
+</div>>
+
+<div class="slidecontainer3">
+  <input type="range" min="500" max="50000" value="25000" class="slider3" id="myDuration" step="500">
+</div>
+
+<div class="textcontainer3">
+  <h4>Duration</h4>
+</div>>
+
+<div class="prevnext">
+  <input type="button" id="btnprevious" value="Previous" onclick="PreviousSection()">
+  <input type="button" id="btnnext" value="Next" onclick="NextSection()">
+</div>
+
+<div class="checkbox7">
+  <strong>Free Camera:</strong>
+  <input type="checkbox" id="FreeCam">
+</div>
+
+<script src="https://unpkg.com/three@0.126.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<div id="map"></div>
+
+<div class="MapLocationContainer">
+  <h2 id="MapLocationName">Tracking The Panels</h2>
+  <p id="MapLocationDesc">    This interactive map depicts the long journey that the large gold coated, beryllium panels of the James Webb Space Telescope must take along its constructed evolutionary journey. This map tracks the panels all the way back from the mining of the raw materials used in their construction, to their shaping, systems incorporation and testing, all the way to their full assembly, packaging, and shipping to French Guiana, where the telescope is set to be launched into space on December 22nd of this year.
+  </p>
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZG1rbGluZ2VyMTIiLCJhIjoiY2t2NzZoMnQxMXI3cjJvbDBpaDZtcDRxMCJ9.MuV__FdHRC7aSMrd-GEJeg';
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox-map-design/ckhqrf2tz0dt119ny6azh975y',
+  center: [-80.5837339, 25.5114132],
+  zoom: 4,
+  bearing: 0,
+  pitch: 30,
+  antialias: true
+});
+
+function UpdateInfo() {
+  switch(activeChapterName) {
+    case 'zoomedout':
+      document.getElementById("MapLocationName").innerText="Tracking The Panels";
+      document.getElementById("MapLocationDesc").innerText="    This interactive map depicts the long journey that the large gold coated, beryllium panels of the James Webb Space Telescope must take along its constructed evolutionary journey. This map tracks the panels all the way back from the mining of the raw materials used in their construction, to their shaping, systems incorporation and testing, all the way to their full assembly, packaging, and shipping to French Guiana, where the telescope is set to be launched into space on December 22nd of this year.";
+    break;
+    case 'bwm':
+      document.getElementById("MapLocationName").innerText="Brush Wellman Mines";
+      document.getElementById("MapLocationDesc").innerText="    The Beryllium Powder that comprises the primary material for the panels and body of the JWST is mined at the Brush Wellman Inc. mine located in the Topaz-Spor Mountains of Utah. \n    Beryllium is the material of choice for the JWST because the material is quite stiff and durable, but most importantly, it retains its shapes at very low temperatures, which is what the conditions of space are like. The telescope is estimated to get as cold as -220 Kelvin in some areas during its life cycle in space.";
+    break;
+    case 'bwi':
+      document.getElementById("MapLocationName").innerText="Brush Wellman Inc.";
+      document.getElementById("MapLocationDesc").innerText="    The Beryllium Powder is then shipped to Brush Wellman Inc. in Elmore, Ohio, wher it is then sifted and purified into an extremely uniform optical mirror blank. \n    It is crucial that the mirror face is perfectly uniform and flat, as reflecting light from the far reaches of our galaxy demands the panels have as smooth and uniform a surface as possible to accurately reflect light into the telescopes secondary mirror. Any small bumps or uneven areas would almost certainly make the exposures token by the telescope into smudged messes.";
+    break;
+    case 'axsys':
+      document.getElementById("MapLocationName").innerText="Axsys Technologies";
+      document.getElementById("MapLocationDesc").innerText="    These smooth mirror blanks are then sent to Axsys Technologies in Cullman, Alabama, where the back of each 'blank' is made into a honeycomb structure to lighten it, and they also provide the general shaping of the front of the mirror. \n     The JWST is going to be the largest telescope launched into space by quite a significant margin. As such, fitting the mirror into a conventional rocket turned into quite a big issue. The solution was to segment the primary mirror into small hexagonal pieces, which would allow the telescope to be folded up into a rocket, and unfolded when released into space.";
+    break;
+    case 'coherent':
+      document.getElementById("MapLocationName").innerText="Coherent Inc. (Formerly Tinsley Labs)";
+      document.getElementById("MapLocationDesc").innerText="    After the hexagons have been shaped, they are sent to L3 Communications, Coherent Inc. in Richmond, California, where the segments are further ground and polished into their exact desired shaped, and are then tested at room temperature. \n     It is crucial that the panels be tested at nearly every stage of the construction process. Catching issues is much easier when the components are on the surface of the Earth. By the time the telescope is in space, it will have been too late to fix and of this issues.";
+    break;
+    case 'ball':
+      document.getElementById("MapLocationName").innerText="Ball Aerospace & Technology";
+      document.getElementById("MapLocationDesc").innerText="    The refined panels are then sent to Ball Aerospace & Technology in Boulder, Colorada. They are one of NASA's primary partners in this project. It is here that mounts and actuators are attached to the mirror segments, and vibration and optical testing are performed. \n    Mounts and actuators are components of the panels that are both going to allow them fold and an unfold for the launch sequences, but also to control incredibly precise movements of the panels to align them with respect to each other.";
+    break;
+    case 'nts':
+      document.getElementById("MapLocationName").innerText="X-Ray & Cryogenic Facility";
+      document.getElementById("MapLocationDesc").innerText="    The panels along with the actuators are sent to he X-Ray and Cryogenics Facility (XRCF) in Huntsville, Alabama, where Ball Aerospace conducts cold (cryogenic) vacuum optical testing of segments in order to generate a map of cold distortions provided as a map to Tinsley Labs. \n    Several tests have to be done at these extremely cold temperatures to simulate the conditions the craft itself will be in when in space. Testing at these cold conditions also helps the engineers notice several other potential problems with the components construction.";
+    break;
+    case 'ball2':
+      document.getElementById("MapLocationName").innerText="Ball Aerospace & Technology";
+      document.getElementById("MapLocationDesc").innerText="    After testing, the panels are sent back to Ball Aerospace & Technology to temporarily removed the mounts and actuators for the next step of the process.";
+    break;
+    case 'coherent2':
+      document.getElementById("MapLocationName").innerText="Coherent Inc. (Formerly Tinsley Labs)";
+      document.getElementById("MapLocationDesc").innerText="    The panels are then sent back to L3 Communications, Coherent Inc where each mirror is fine-tuned by polishing in the opposite of the surface error values derived from the XRCF's super-cold testing. Now, distortion that occurs in space-cold should actually perfect the mirror. \n    By testing the panels at extreme cold conditions, the engineers are able to reverse-engineer warping and changes across the panels, and apply those conditons to the panels before assembly, this way, when they are sent into space, the environment itself actually warps them into their intended form.";
+    break;
+    case 'ball3':
+      document.getElementById("MapLocationName").innerText="Ball Aerospace & Technology";
+      document.getElementById("MapLocationDesc").innerText="    Again, the panels are sent back to Ball Aerospace for another cleaning process of the panels, and to ultimately prepare them for coating. \n    Cleaning at every stage of the process is important. As the panel moves, it is going to accumulate dust and other unwanted particles, even considering it is only worked on in highly sterile environments. Taking precautions to prevent coating over these smaller bumps is integral to the performance of the craft.";
+    break;
+    case 'qci':
+      document.getElementById("MapLocationName").innerText="Quantum Coating Inc.";
+      document.getElementById("MapLocationDesc").innerText="    Then, the panels are sent to Quantum Coating Inc. in Moorestown, New Jersey, where gold is evaporated over the segments in a vacuum chamber. It forms a very thin coating on the smooth mirror surface. \n    Gold is applied to the panels as it is one of the most reflective materials we know about in extreme cold situations. Ultimately, across the entire full assembly, there is only about a golf ball's amount of gold. The layers evaporated onto the panels are about 1000 times thinner than a piece of paper.";
+    break;
+    case 'ball4':
+      document.getElementById("MapLocationName").innerText="Ball Aerospace & Technology";
+      document.getElementById("MapLocationDesc").innerText="    The panels are sent back to Ball Aerospace one final time to reassemble the mirror segments along with their mounts and actuators. Final vibrations testing is also performed before the panels are sent off again.";
+    break;
+    case 'nts2':
+      document.getElementById("MapLocationName").innerText="X-Ray & Cryogenic Facility";
+      document.getElementById("MapLocationDesc").innerText="    The panels make one more stop at the XRCF facility in Huntsville for one more stage of cryogenic testing on each segment.";
+    break;
+    case 'goddard':
+      document.getElementById("MapLocationName").innerText="NASA Goddard Space Flight Center";
+      document.getElementById("MapLocationDesc").innerText="    Next, the panels are sent to the NASA Goddard Space Flight Center in Greenbelt, Maryland, where personnel from the ITT Corporation in Rochester, New York assemble the telescope and attaches it to the instuments module. Additionally, acoustic and vibrations testing are performed.";
+    break;
+    case 'johnson':
+      document.getElementById("MapLocationName").innerText="NASA Johnson Space Flight Center";
+      document.getElementById("MapLocationDesc").innerText="    One final phase of testing is performed as the NASA Johnson Space Flight Center in Houston, Texas.";
+    break;
+    case 'ngc':
+      document.getElementById("MapLocationName").innerText="Northrop Grumman Corporation";
+      document.getElementById("MapLocationDesc").innerText="    After assembling the mirrors, the craft is stored at Northrop Grumman's facility in Redondo Beach, California. It is here that the primary mirror is connected to the other major components of the craft, including the five layer sunshield, secondary and tertiary mirrors, and other scientific instruments.";
+    break;
+    case 'gsp':
+      document.getElementById("MapLocationName").innerText="French Guiana Space Centre";
+      document.getElementById("MapLocationDesc").innerText="    Finally, the craft is sent on a journey from California, along the coast of Mexico and Central America, through the Panama Canal, along the coasts of Columbia and Venezuela, before finally arriving at the French Guiana Space Centre, a facility run by the European Space Agency. The craft will launch in an Ariane 5 rocket on a million mile journey to its final destination in space.";
+    break;
+    case 'earth':
+      document.getElementById("MapLocationName").innerText="French Guiana Space Centre";
+      document.getElementById("MapLocationDesc").innerText="    If all goes well, and the weather cooperates, the James Webb Telescope will launch on December 22nd, just a weeks time, into space. There, the craft will unfold, and begin its three month jourey to the second lagrange point, where the craft will remain for the duration of its decade long mission.";
+    break;
+  }
+}
+
+function PreviousSection() {
+  console.log(activeChapterName);
+  switch(activeChapterName) {
+    case 'earth':
+      setActiveChapter('gsp');
+    break;
+    case 'gsp':
+      setActiveChapter('ngc');
+    break;
+    case 'ngc':
+      setActiveChapter('johnson');
+    break;
+    case 'johnson':
+      setActiveChapter('goddard');
+    break;
+    case 'goddard':
+      setActiveChapter('nts2');
+    break;
+    case 'nts2':
+      setActiveChapter('ball4');
+    break;
+    case 'ball4':
+      setActiveChapter('qci');
+    break;
+    case 'qci':
+      setActiveChapter('ball3');
+    break;
+    case 'ball3':
+      setActiveChapter('coherent2');
+    break;
+    case 'coherent2':
+      setActiveChapter('ball2');
+    break;
+    case 'ball2':
+      setActiveChapter('nts');
+    break;
+    case 'nts':
+      setActiveChapter('ball');
+    break;
+    case 'ball':
+      setActiveChapter('coherent');
+    break;
+    case 'coherent':
+      setActiveChapter('axsys');
+    break;
+    case 'axsys':
+      setActiveChapter('bwi');
+    break;
+    case 'bwi':
+      setActiveChapter('bwm');
+    break;
+    case 'bwm':
+      setActiveChapter('zoomedout');
+    break;
+    case 'zoomedout':
+      setActiveChapter('earth');
+    break;
+  }
+}
+
+function NextSection() {
+  switch(activeChapterName) {
+    case 'zoomedout':
+      setActiveChapter('bwm');
+    break;
+    case 'bwm':
+      setActiveChapter('bwi');
+    break;
+    case 'bwi':
+      setActiveChapter('axsys');
+    break;
+    case 'axsys':
+      setActiveChapter('coherent');
+    break;
+    case 'coherent':
+      setActiveChapter('ball');
+    break;
+    case 'ball':
+      setActiveChapter('nts');
+    break;
+    case 'nts':
+      setActiveChapter('ball2');
+    break;
+    case 'ball2':
+      setActiveChapter('coherent2');
+    break;
+    case 'coherent2':
+      setActiveChapter('ball3');
+    break;
+    case 'ball3':
+      setActiveChapter('qci');
+    break;
+    case 'qci':
+      setActiveChapter('ball4');
+    break;
+    case 'ball4':
+      setActiveChapter('nts2');
+    break;
+    case 'nts2':
+      setActiveChapter('goddard');
+    break;
+    case 'goddard':
+      setActiveChapter('johnson');
+    break;
+    case 'johnson':
+      setActiveChapter('ngc');
+    break;
+    case 'ngc':
+      setActiveChapter('gsp');
+    break;
+    case 'gsp':
+      setActiveChapter('earth');
+    break;
+    case 'earth':
+      setActiveChapter('zoomedout');
+    break;
+  }
+}
+
+function rotateCamera(timestamp, varCenter, varDuration, varZoom, varPitch) {
+  map.rotateTo(timestamp, {duration: varDuration, zoom: varZoom, pitch: varPitch });
+}
+
+map.on('load', () => {
+  rotatetest = 120;
+  rotateCamera(120, [-80.5837339, 25.5114132], 25000, 4, 30);
+})
+
+map.on('load', () => {
+map.addSource('mapbox-dem', {
+'type': 'raster-dem',
+'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+'tileSize': 512,
+'maxzoom': 14
+});
+map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+
+map.addLayer({
+'id': 'sky',
+'type': 'sky',
+'paint': {
+'sky-type': 'gradient',
+'sky-gradient': [
+'interpolate',
+['linear'],
+['sky-radial-progress'],
+0.8,'rgba(135, 206, 235, 1.0)',1,'rgba(0,0,0,0.1)'],
+'sky-gradient-center': [0, 0],
+'sky-gradient-radius': 90,
+'sky-opacity': [
+'interpolate',
+['exponential', 0.1],
+['zoom'],5,0,22,1]}
+});
+});
+
+
+
+map.on('load', () => {
+map.addSource('route', {
+'type': 'geojson',
+'data': {
+'type': 'Feature',
+'properties': {},
+'geometry': {
+'type': 'LineString',
+'coordinates': [
+[-112.5837339, 39.5114132],
+[-81.5524275, 41.5664134],
+[-86.8861148, 34.2095237],
+[-122.3321716, 37.9868991],
+[-105.0997533, 39.9117581],
+[-86.7148069, 34.6924538],
+[-105.0997533, 39.9117581],
+[-122.3321716, 37.9868991],
+[-105.0997533, 39.9117581],
+[-74.984786, 39.9778208],
+[-105.0997533, 39.9117581],
+[-86.7148069, 34.6924538],
+[-76.852344, 38.99495],
+[-95.089998, 29.5593451],
+[-118.3732839, 33.8919061],
+[-122.794202, 28.351198],
+[-81.118218, 1.473803],
+[-76.110337, 14.494756],
+[-55.193202, 9.464429],
+[-52.6832152, 5.1673328]
+]
+}
+}
+});
+map.addLayer({
+'id': 'route',
+'type': 'line',
+'source': 'route',
+'layout': {
+'line-join': 'round',
+'line-cap': 'round'
+},
+'paint': {
+'line-color': 'red',
+'line-width': 1
+}
+});
+});
+
+map.on('load', () => {
+// Insert the layer beneath any symbol layer.
+const layers = map.getStyle().layers;
+const labelLayerId = layers.find(
+(layer) => layer.type === 'symbol' && layer.layout['text-field']
+).id;
+
+// The 'building' layer in the Mapbox Streets
+// vector tileset contains building height data
+// from OpenStreetMap.
+map.addLayer(
+{
+'id': 'add-3d-buildings',
+'source': 'composite',
+'source-layer': 'building',
+'filter': ['==', 'extrude', 'true'],
+'type': 'fill-extrusion',
+'minzoom': 15,
+'paint': {
+'fill-extrusion-color': '#aaa',
+
+// Use an 'interpolate' expression to
+// add a smooth transition effect to
+// the buildings as the user zooms in.
+'fill-extrusion-height': [
+'interpolate',
+['linear'],
+['zoom'],
+15,
+0,
+15.05,
+['get', 'height']
+],
+'fill-extrusion-base': [
+'interpolate',
+['linear'],
+['zoom'],
+15,
+0,
+15.05,
+['get', 'min_height']
+],
+'fill-extrusion-opacity': 0.9
+}
+},
+labelLayerId
+);
+});
+
+const marker = new mapboxgl.Marker()
+.setLngLat([-112.5837339, 39.5114132])
+.addTo(map);
+
+const marker1 = new mapboxgl.Marker()
+.setLngLat([-81.5524275, 41.5664134])
+.addTo(map);
+
+const marker2 = new mapboxgl.Marker()
+.setLngLat([-86.8861148, 34.2095237])
+.addTo(map);
+
+const marker3 = new mapboxgl.Marker()
+.setLngLat([-122.3321716, 37.9868991])
+.addTo(map);
+
+const marker4 = new mapboxgl.Marker()
+.setLngLat([-105.0997533, 39.9117581])
+.addTo(map);
+
+const marker5 = new mapboxgl.Marker()
+.setLngLat([-86.7148069, 34.6924538])
+.addTo(map);
+
+const marker6 = new mapboxgl.Marker()
+.setLngLat([-74.984786, 39.9778208])
+.addTo(map);
+
+const marker7 = new mapboxgl.Marker()
+.setLngLat([-76.852344, 38.99495])
+.addTo(map);
+
+const marker8 = new mapboxgl.Marker()
+.setLngLat([-95.089998, 29.5593451])
+.addTo(map);
+
+const marker9 = new mapboxgl.Marker()
+.setLngLat([-118.3732839, 33.8919061])
+.addTo(map);
+
+const marker10 = new mapboxgl.Marker()
+.setLngLat([-52.6832152, 5.1673328])
+.addTo(map);
+
+
+
+const chapters = {
+  'zoomedout': {
+    duration: 25000,
+    center: [-80.5837339, 25.5114132],
+    bearing: 0,
+    zoom: 4,
+    pitch: 30
+  },
+  'bwm': {
+    duration: 25000,
+    bearing: 0,
+    center: [-112.5837339, 39.5114132],
+    zoom: 13,
+    pitch: 30
+  },
+  'earth': {
+    duration: 25000,
+    center: [-80.5837339, 25.5114132],
+    bearing: 0,
+    zoom: 3,
+    pitch: 30
+  },
+  'bwi': {
+    duration: 25000,
+    center: [-81.5524275, 41.5664134],
+    bearing: 0,
+    zoom: 17,
+    pitch: 30
+  },
+  'axsys': {
+    duration: 25000,
+    bearing: 0,
+    center: [-86.8861148, 34.2095237],
+    zoom: 16,
+    pitch: 30
+  },
+  'coherent': {
+    duration: 25000,
+    bearing: 0,
+    center: [-122.3321716, 37.9868991],
+    zoom: 17,
+    pitch: 30
+  },
+  'ball': {
+    duration: 25000,
+    bearing: 0,
+    center: [-105.0997533, 39.9117581],
+    zoom: 17,
+    pitch: 30
+  },
+  'nts': {
+    duration: 25000,
+    bearing: 0,
+    center: [-86.7148069, 34.6924538],
+    zoom: 17,
+    pitch: 30
+  },
+  'ball2': {
+    duration: 25000,
+    bearing: 0,
+    center: [-105.0997533, 39.9117581],
+    zoom: 17,
+    pitch: 30
+  },
+  'coherent2': {
+    duration: 25000,
+    bearing: 0,
+    center: [-122.3321716, 37.9868991],
+    zoom: 17,
+    pitch: 30
+  },
+  'ball3': {
+    duration: 25000,
+    bearing: 0,
+    center: [-105.0997533, 39.9117581],
+    zoom: 17,
+    pitch: 30
+  },
+  'qci': {
+    duration: 25000,
+    bearing: 0,
+    center: [-74.984786, 39.9778208],
+    zoom: 17,
+    pitch: 30
+  },
+  'ball4': {
+    duration: 25000,
+    bearing: 0,
+    center: [-105.0997533, 39.9117581],
+    zoom: 17,
+    pitch: 30
+  },
+  'nts2': {
+    duration: 25000,
+    bearing: 0,
+    center: [-86.7148069, 34.6924538],
+    zoom: 17,
+    pitch: 30
+  },
+  'goddard': {
+    duration: 25000,
+    bearing: 0,
+    center: [-76.852344, 38.99495],
+    zoom: 17,
+    pitch: 30
+  },
+  'johnson': {
+    duration: 25000,
+    bearing: 0,
+    center: [-95.089998, 29.5593451],
+    zoom: 17,
+    pitch: 30
+  },
+  'ngc': {
+    duration: 25000,
+    bearing: 0,
+    center: [-118.3732839, 33.8919061],
+    zoom: 17,
+    pitch: 30
+  },
+  'gsp': {
+    duration: 25000,
+    bearing: 0,
+    center: [-52.6832152, 5.1673328],
+    zoom: 15,
+    pitch: 30
+  }
+};
+
+var sliderZoom = document.getElementById("myZoom");
+var sliderPitch = document.getElementById("myPitch");
+var sliderDuration = document.getElementById("myDuration");
+
+let activeChapterName = 'zoomedout';
+function setActiveChapter(chapterName) {
+  if (chapterName === activeChapterName) return;
+  sliderZoom.value = chapters[chapterName].zoom;
+  sliderPitch.value = chapters[chapterName].pitch;
+  sliderDuration.value = chapters[chapterName].duration;
+  map.flyTo(chapters[chapterName]);
+
+  // document.getElementById(chapterName).classList.add('active');
+  // document.getElementById(activeChapterName).classList.remove('active');
+
+  activeChapterName = chapterName;
+  UpdateInfo();
+}
+
+function autorotate() {
+  var checkFreeCam = document.getElementById('FreeCam');
+  if (checkFreeCam.checked != true) {
+    if (rotatetest == 0) {
+      rotateCamera(120, chapters[activeChapterName].center, sliderDuration.value, sliderZoom.value, sliderPitch.value);
+      // rotateCamera(120, sliderDuration.value, sliderZoom.value, sliderPitch.value);
+      rotatetest = 120;
+    } else if (rotatetest == 120) {
+      rotateCamera(240, chapters[activeChapterName].center, sliderDuration.value, sliderZoom.value, sliderPitch.value);
+      // rotateCamera(240, sliderDuration.value, sliderZoom.value, sliderPitch.value);
+      rotatetest = 240;
+    } else {
+      rotateCamera(0, chapters[activeChapterName].center, sliderDuration.value, sliderZoom.value, sliderPitch.value);
+      // rotateCamera(0, sliderDuration.value, sliderZoom.value, sliderPitch.value);
+      rotatetest = 0;
+    }
+  }
+}
+    map.on('idle', () => {
+      autorotate();
+    });
+
+    map.on('moveend', () => {
+      autorotate();
+    });
+
+
+map.on('load', () => {map.addSource('mapillary', {'type': 'vector','tiles': ['https://tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token=MLY|4142433049200173|72206abe5035850d6743b23a49c41333'],'minzoom': 1,'maxzoom': 999});
+
+map.addLayer({'id': 'mapillary', 'type': 'line','source': 'mapillary', 'source-layer': 'sequence','layout': {'line-cap': 'round','line-join': 'round'},'paint': {'line-opacity': 0.6,'line-color': 'rgb(255, 215, 0)','line-width': 2}},);});
+
+map.addControl(new mapboxgl.FullscreenControl());
+
+</script>
+</body>
+</html>
+
+</script>
+
+</body>
+</html>
